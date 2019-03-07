@@ -1,12 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+// import React from 'react';
+// import ReactDOM from 'react-dom';
+// import './index.css';
+// import App from './App';
+// import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// class Bracket extends React.Component {
+//     render() {
+//         return(
+//
+//         )
+//     }
+// }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+class Page extends React.Component {
+    render() {
+        return(
+            <div className="leaderboard list">
+                <h1>Leaderboard</h1>
+                <ul>
+                    <li>First</li>
+                    <li>Second</li>
+                    <li>Third</li>
+                    <li>Fourth</li>
+                    <li>Fifth</li>
+                </ul>
+            </div>
+        )
+    }
+}
+
+ReactDOM.render(<Page />, document.getElementById("root"));
 serviceWorker.unregister();
