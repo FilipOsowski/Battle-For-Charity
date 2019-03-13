@@ -23,12 +23,17 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "http://battleforcharity:5555/create-user", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-            "name" : profile.getName(),
-            "email" : profile.getEmail(),
-            "profile_id" : profile.getId(),
-            "hd" : googleUser.getHostedDomain()
-        }));
+        
+        var data = JSON.stringify({
+            name : profile.getName(),
+            email : profile.getEmail(),
+            profile_id : profile.getId(),
+            hd : googleUser.getHostedDomain()
+        });
+        
+        colsole.log(data);
+        
+        xhr.send(data);
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 console.log("redirecting...")
