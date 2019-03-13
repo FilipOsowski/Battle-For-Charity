@@ -34,12 +34,13 @@
         console.log(data);
         
         xhr.send(data);
-//         xhr.onreadystatechange = function() {
-//             if (xhr.readyState === XMLHttpRequest.DONE) {
-//                 console.log("redirecting...")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                console.log("redirecting...")
+                console.log(xhr.responseText)
 //                 window.location = xhr.responseText
-//             }
-//         }
+            }
+        }
     }
 </script>
 
