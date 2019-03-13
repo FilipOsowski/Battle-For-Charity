@@ -30,16 +30,16 @@
             profile_id : profile.getId(),
             hd : googleUser.getHostedDomain()
         });
-        fd
+        
         console.log(data);
         
         xhr.send(data);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                console.log("redirecting...")
-                window.location = xhr.responseText
-            }
-        }
+//         xhr.onreadystatechange = function() {
+//             if (xhr.readyState === XMLHttpRequest.DONE) {
+//                 console.log("redirecting...")
+//                 window.location = xhr.responseText
+//             }
+//         }
     }
 </script>
 
