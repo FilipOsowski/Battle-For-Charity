@@ -24,10 +24,10 @@
         xhr.open("POST", "http://battleforcharity:5555/create-user", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({
-            name: profile.getName(),
-            email: profile.getEmail(),
-            profile_id: profile.getId(),
-            hd: googleUser.getHostedDomain()
+            "name" : profile.getName(),
+            "email" : profile.getEmail(),
+            "profile_id" : profile.getId(),
+            "hd" : googleUser.getHostedDomain()
         }));
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
