@@ -16,12 +16,10 @@
 
 <script>
     var leaderBoard;
-
     function onSignIn(googleUser) {
         let profile = googleUser.getBasicProfile();
-
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://18.216.113.73/create-user", true);
+        xhr.open("POST", "http://battleforcharity:5555/create-user", true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({
             name: profile.getName(),
@@ -29,7 +27,6 @@
             profile_id: profile.getId(),
             hd: googleUser.getHostedDomain()
         }));
-
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 console.log("redirecting...")
