@@ -12,6 +12,7 @@ var correct_brackets = {male: ["A", "D", "F", "G", "H", "I", "K", "M", "O", "P",
 var starting_names = {male: ["A", "B", "C", "D", "E", "F", "G", "BYE", "H", "BYE", "I", "J", "K", "L", "BYE", "M", "N", "O", "P", "BYE", "Q", "R", "S", "T", "U", "BYE", "V", "W", "X", "Y", "BYE", "Z"], female: ["A", "B", "C", "D", "E", "F", "G", "BYE", "H", "BYE", "I", "J", "K", "L", "BYE", "M", "N", "O", "P", "BYE", "Q", "R", "S", "T", "U", "BYE", "V", "W", "X", "Y", "BYE", "Z"]}
 
 var user_has_posted = {male: false, female: false};
+var event_has_started = false;
 var profile_id = 99999;
 var username = "Test User";
 var leaderboard = [["A", 50], ["B", 45], ["C", 40], ["D", 35], ["E", 30], ["F", 25], ["G", 20], ["H", 15], ["I", 10], ["J", 5], ["K", 0]];
@@ -76,10 +77,10 @@ class NavBar extends React.Component {
 				>
 					{/*This is what's inside each tab*/}
 					<TabContainer>
-						<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"]} gender="male"/>
+						<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"] || event_has_started} gender="male"/>
 					</TabContainer>
 					<TabContainer>
-						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"]} gender="female"/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"] || event_has_started} gender="female"/>
 					</TabContainer>
 					<TabContainer>
 						<Leaderboard leaderboard={leaderboard}/>
@@ -127,7 +128,7 @@ class PostButton extends React.Component {
 	onClick() {
 		// Make POST request to http://18.216.113.73/set-user-bracket
 		// Use the keys "profile_id" and whatever gender is for the user's profile id and user_bracket respectively
-		// Show a dialog depending on what the server returns
+		// Show a dialog when the server returns
 		// set user_has_posted[gender] to true and call disable_bracket
 		console.log("Post button was clicked");
 	}
