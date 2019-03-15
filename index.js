@@ -19,13 +19,13 @@ var leaderboard = [["A", 50], ["B", 45], ["C", 40], ["D", 35], ["E", 30], ["F", 
 //This code is all the navigation bar and the space inside of it
 
 function TabContainer(props) {
-		const { children } = props;
+	const { children } = props;
 
-		return (
-				<Typography component="div" style={{ padding: 8 * 3 }}>
-						{children}
-				</Typography>
-		);
+	return (
+		<Typography component="div" style={{ padding: 8 * 3 }}>
+			{children}
+		</Typography>
+	);
 }
 
 TabContainer.propTypes = {
@@ -33,66 +33,65 @@ TabContainer.propTypes = {
 };
 
 class NavBar extends React.Component {
-		constructor(props) {
-			super(props)
-			this.update = this.update.bind(this);
-			this.state = {
-					value: 0,
-			};
-		}
-		
-		handleChange = (event, value) => {
-				this.setState({ value });
+	constructor(props) {
+		super(props)
+		this.update = this.update.bind(this);
+		this.state = {
+				value: 0,
 		};
+	}
+	
+	handleChange = (event, value) => {
+		this.setState({ value });
+	};
 
-		handleChangeIndex = index => {
-				this.setState({ value: index });
-		};
+	handleChangeIndex = index => {
+		this.setState({ value: index });
+	};
 
-		update() {
-			this.forceUpdate();
-		}
+	update() {
+		this.forceUpdate();
+	}
 
 
-		render() {
-				return (
-						<div className="SwipeableViewsContainer">
-								<AppBar position="static" color="default">
-										<Tabs
-												value={this.state.value}
-												onChange={this.handleChange}
-												indicatorColor="primary"
-												textColor="primary"
-												variant="fullWidth"
-										>
-												<Tab label="Male Bracket" />
-												<Tab label="Female Bracket" />
-												<Tab label="Leaderboard" />
-										</Tabs>
-								</AppBar>
-								<SwipeableViews
-										index={this.state.value}
-										onChangeIndex={this.handleChangeIndex}
-								>
-
-										{/*This is what's inside each tab*/}
-										<TabContainer>
-												<PostButton gender="male" user_bracket={user_brackets["male"]} update={this.update}/>
-												<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"]}/>
-										</TabContainer>
-										<TabContainer>
-												<PostButton gender="female" user_bracket={user_brackets["female"]} update={this.update}/>
-												<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"]}/>
-										</TabContainer>
-										<TabContainer>
-												<Leaderboard leaderboard={leaderboard}/>
-												<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
-												<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
-										</TabContainer>
-								</SwipeableViews>
-						</div>
-				);
-		}
+	render() {
+		return (
+			<div className="SwipeableViewsContainer">
+				<AppBar position="static" color="default">
+					<Tabs
+						value={this.state.value}
+						onChange={this.handleChange}
+						indicatorColor="primary"
+						textColor="primary"
+						variant="fullWidth"
+					>
+						<Tab label="Male Bracket" />
+						<Tab label="Female Bracket" />
+						<Tab label="Leaderboard" />
+					</Tabs>
+				</AppBar>
+				<SwipeableViews
+					index={this.state.value}
+					onChangeIndex={this.handleChangeIndex}
+				>
+					{/*This is what's inside each tab*/}
+					<TabContainer>
+						<PostButton gender="male" user_bracket={user_brackets["male"]} update={this.update}/>
+						<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"]}/>
+					</TabContainer>
+					<TabContainer>
+						<PostButton gender="female" user_bracket={user_brackets["female"]} update={this.update}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"]}/>
+					</TabContainer>
+					<TabContainer>
+						<Leaderboard leaderboard={leaderboard}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
+					</TabContainer>
+				</SwipeableViews>
+			</div>
+		);
+	}
 }
 
 class Leaderboard extends React.Component {
