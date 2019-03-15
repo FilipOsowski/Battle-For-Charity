@@ -173,8 +173,8 @@ class Tournament extends React.Component {
 			// <Match id={id} names={names} handleChange={this.handleChange} disableDefault={this.state.disabled} user_bracket={this.props.user_bracket}/>
 			//const { user_bracket, update, gender } = props;
 			<div className="tournament">
-				Tournament matches go here.
-				postButton
+				Tournament matches go here. <br/><br/><br/>
+				{postButton}
 			</div>
 		)
 	}
