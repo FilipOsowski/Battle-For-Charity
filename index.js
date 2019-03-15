@@ -76,17 +76,15 @@ class NavBar extends React.Component {
 				>
 					{/*This is what's inside each tab*/}
 					<TabContainer>
-						<PostButton gender="male" user_bracket={user_brackets["male"]} update={this.update}/>
-						<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"]}/>
+						<Tournament starting_names={starting_names["male"]} user_brackets={user_brackets["male"]} disabled={user_has_posted["male"]} gender="male"/>
 					</TabContainer>
 					<TabContainer>
-						<PostButton gender="female" user_bracket={user_brackets["female"]} update={this.update}/>
-						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"]}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"]} gender="female"/>
 					</TabContainer>
 					<TabContainer>
 						<Leaderboard leaderboard={leaderboard}/>
-						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
-						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={user_has_posted["female"]}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={true}/>
+						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={true}/>
 					</TabContainer>
 				</SwipeableViews>
 			</div>
@@ -117,7 +115,7 @@ class Leaderboard extends React.Component {
 class PostButton extends React.Component {
 	constructor(props) {
 		super(props);
-		const { user_bracket, update, gender } = props;
+		const { user_bracket, disable_bracket, gender } = props;
 		var disabled = false;
 
 		// Disable button if user_has_posted[gender] is true or the last element in user_bracket is not null
@@ -130,7 +128,7 @@ class PostButton extends React.Component {
 		// Make POST request to http://18.216.113.73/set-user-bracket
 		// Use the keys "profile_id" and whatever gender is for the user's profile id and user_bracket respectively
 		// Show a dialog depending on what the server returns
-		// set user_has_posted[gender] to true and call update
+		// set user_has_posted[gender] to true and call disable_bracket
 		console.log("Post button was clicked");
 	}
 
@@ -146,7 +144,9 @@ class PostButton extends React.Component {
 class Tournament extends React.Component {
 	constructor(props) {
 		super(props);
-		const { user_bracket, starting_names, disabled } = props;
+		const { user_bracket, starting_names, disabled, gender } = props;
+
+		this.state = {disabled: disabled};
 
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -157,12 +157,25 @@ class Tournament extends React.Component {
 		//this.setState({ user_bracket: this.state.user_bracket });
 	}
 
+	disableBracket() {
+		this.setState({disabled: true});
+	}
+
 	render() {
+		let postButton = '';
+		if (!(this.state.disabled)) {
+			postButton = <PostButton gender={this.props.gender} user_bracket={this.props.user_bracket} disable_bracket={this.disableBracket}/>;
+		}
+
 		return (
 			// Make 31 matches using starting_names and user_bracket
 			// Create matches like this:
-			// <Match id={id} names={names} handleChange={this.handleChange} disableDefault={this.props.disabled} user_bracket={this.props.user_bracket}/>
-				<div className="tournament">Tournament matches go here.</div>
+			// <Match id={id} names={names} handleChange={this.handleChange} disableDefault={this.state.disabled} user_bracket={this.props.user_bracket}/>
+			//const { user_bracket, update, gender } = props;
+			<div className="tournament">
+				Tournament matches go here.
+				postButton
+			</div>
 		)
 	}
 }
