@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import SwipeableViews from 'react-swipeable-views';
-import { AppBar, Tabs, Tab, Typography, Button, Radio, RadioGroup, FormControlLabel, FormControl } from '@material-ui/core';
+import { AppBar, Tabs, Tab, Typography, Button, Radio, RadioGroup, FormControlLabel, FormControl, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import './index.css';
 
 var user_brackets = {male: ["A", "D", "F", "G", "H", "I", "K", "M", "O", "P", "R", "S", "U", "V", "Y", "Z", "D", "F", "H", "M", "O", "S", "U", "Y", "F", "M", "O", "U", "M", "O", "M"], female: ["A", "D", "F", "G", "H", "I", "K", "M", "O", "P", "R", "S", "U", "V", "Y", "Z", "D", "F", "H", "M", "O", "S", "U", "Y", "F", "M", "O", "U", "M", "O", "M"]}
@@ -83,7 +83,7 @@ class NavBar extends React.Component {
 						<Tournament starting_names={starting_names["female"]} user_brackets={user_brackets["female"]} disabled={user_has_posted["female"] || event_has_started} gender="female"/>
 					</TabContainer>
 					<TabContainer>
-						<Leaderboard leaderboard={leaderboard}/>
+						<LeaderboardList/>
 						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={true}/>
 						<Tournament starting_names={starting_names["female"]} user_brackets={correct_brackets["female"]} disabled={true}/>
 					</TabContainer>
@@ -93,24 +93,52 @@ class NavBar extends React.Component {
 	}
 }
 
-class Leaderboard extends React.Component {
-	// If this.props.leaderboard is null, display a message to the user that the event hasn't finished yet. Otherwise, display the leaderboard.
-	render() {
-		return (
-			<div className="mainpage">
-				<div className="tournamentBracket">
-				</div>
-				<div className="leaderboardList">
-					<h1>Leaderboard</h1>
-					<li>First</li>
-					<li>Second</li>
-					<li>Third</li>
-					<li>Fourth</li>
-					<li>Fifth</li>
-				</div>
-			</div>
-		)
-	}
+function createData(id) {
+    let name = leaderboard[id][0];
+    let score = leaderboard[id][1];
+    return {id, name, score};
+}
+
+//The leaderboard list of people that made the top 10
+class LeaderboardList extends React.Component {
+    render() {
+        const rows = [
+            createData(0),
+            createData(1),
+            createData(2),
+            createData(3),
+            createData(4),
+            createData(5),
+            createData(6),
+            createData(7),
+            createData(8),
+            createData(9),
+        ];
+        return (
+            <Table className={"Leaderboard"}>
+                {/*The titles at the top of the leaderboard*/}
+                <TableHead>
+                    <TableRow>
+                        <TableCell align = "center">Name</TableCell>
+                        <TableCell>Score</TableCell>
+                    </TableRow>
+                </TableHead>
+                {/*The names and scores of the people in the leaderboard*/}
+                <TableBody>
+                    {rows.map(row => (
+                        <TableRow key={row.id}>
+                            <TableCell component="th" scope = "row" align = "center">
+                                {row.name}
+                            </TableCell>
+                            <TableCell>
+                                {row.score}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        );
+    }
 }
 
 class PostButton extends React.Component {
