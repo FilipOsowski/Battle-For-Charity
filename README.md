@@ -1,2 +1,2 @@
-# Fight-For-Charity
-This repository contains code for Conant's Fight For Charity Site
+# Battle-For-Charity
+This repository contains code for Conant's Battle For Charity Site
