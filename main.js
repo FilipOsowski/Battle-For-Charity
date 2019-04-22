@@ -4,8 +4,14 @@ import PropTypes from 'prop-types';
 import SwipeableViews from 'react-swipeable-views';
 import { AppBar, Tabs, Tab, Typography, Button, Radio, RadioGroup, FormControlLabel, FormControl, Table, TableBody, TableCell, TableHead, TableRow, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import './index.css';
+import ReactGA from 'react-ga';
 
-var starting_names = {male: ["PersonA Last", "PersonB Last", "PersonC Last", "PersonD Last", "PersonE Last", "PersonF Last", "PersonG Last", "BYE", "PersonH Last", "BYE", "PersonI Last", "PersonJ Last", "PersonK Last", "PersonL Last", "BYE", "PersonM Last", "PersonN Last", "PersonO Last", "PersonP Last", "BYE", "PersonQ Last", "PersonR Last", "PersonS Last", "PersonT Last", "PersonU Last", "BYE", "PersonV Last", "PersonW Last", "PersonX Last", "PersonY Last", "BYE", "PersonZ Last"], female: ["PersonA Last", "PersonB Last", "PersonC Last", "PersonD Last", "PersonE Last", "PersonF Last", "PersonG Last", "BYE", "PersonH Last", "BYE", "PersonI Last", "PersonJ Last", "PersonK Last", "PersonL Last", "BYE", "PersonM Last", "PersonN Last", "PersonO Last", "PersonP Last", "BYE", "PersonQ Last", "PersonR Last", "PersonS Last", "PersonT Last", "PersonU Last", "BYE", "PersonV Last", "PersonW Last", "PersonX Last", "PersonY Last", "BYE", "PersonZ Last"]}
+ReactGA.initialize('UA-137697306-1');
+ReactGA.pageview('/main-page');
+
+const isMobile = window.innerWidth <= 700;
+
+var starting_names = {male: ["Filippo DeFrenza", "BYE", "Teague Conrad", "Eric Braun", "Nick Mussman", "BYE", "Jake Lydon", "BYE", "Jeffrey Pagels", "BYE", "Mark Frale", "BYE", "Jacob Glorioso", "BYE", "Robert Stanislawski", "BYE", "Anthony Wachal", "BYE", "Brandon Kriepke", "Andrew Bittner", "Jacob Cosentino", "BYE", "Davon Holmes", "BYE", "Raja Mittal", "BYE", "Michael Guskey", "Jake Milewski", "Raj Patel", "BYE", "Jaylen Patel", "BYE"], female: ["Katie O'Brien", "BYE", "Sidra Capriolo", "Niva Patel", "Olivia Olszewski", "Laura Vesco", "Kimmi Nijjar", "Nicole Brashears", "Alyssa Bolbot", "BYE", "Kelly O'Sullivan", "Rachel Pariso", "Delaney Demaret", "Bridget Tobin", "Gianna Catania", "Lyric Childs"]}
 var user_brackets = null
 var event_has_started = null
 var leaderboard = null
@@ -14,14 +20,29 @@ var user_has_posted = null;
 var name = null;
 var points = null;
 var rank = null;
-//var user_brackets = {male: ["PersonA Last", "PersonD Last", "PersonF Last", "PersonG Last", "PersonH Last", "PersonI Last", "PersonK Last", "PersonM Last", "PersonO Last", "PersonP Last", "PersonR Last", "PersonS Last", "PersonU Last", "PersonV Last", "PersonY Last", "PersonZ Last", "PersonA Last", "PersonF Last", "PersonH Last", "PersonM Last", "PersonO Last", "PersonS Last", "PersonU Last", "PersonY Last", "PersonF Last", "PersonM Last", "PersonO Last", "PersonU Last", "PersonM Last", "PersonO Last", "PersonM Last"], female: ["PersonA Last", "PersonD Last", "PersonF Last", "PersonG Last", "PersonH Last", "PersonI Last", "PersonK Last", "PersonM Last", "PersonO Last", "PersonP Last", "PersonR Last", "PersonS Last", "PersonU Last", "PersonV Last", "PersonY Last", "PersonZ Last", "PersonD Last", "PersonF Last", "PersonH Last", "PersonM Last", "PersonO Last", "PersonS Last", "PersonU Last", "PersonY Last", "PersonF Last", "PersonM Last", "PersonO Last", "PersonU Last", "PersonM Last", "PersonO Last", "PersonM Last"]}
-//var correct_brackets = {male: ["PersonA Last", "PersonD Last", "PersonF Last", "PersonG Last", "PersonH Last", "PersonI Last", "PersonK Last", "PersonM Last", "PersonO Last", "PersonP Last", "PersonR Last", "PersonS Last", "PersonU Last", "PersonV Last", "PersonY Last", "PersonZ Last", "PersonD Last", "PersonF Last", "PersonH Last", "PersonM Last", "PersonO Last", "PersonS Last", "PersonU Last", "PersonY Last", "PersonF Last", "PersonM Last", "PersonO Last", "PersonU Last", "PersonM Last", "PersonO Last", "PersonM Last"], female: ["PersonA Last", "PersonD Last", "PersonF Last", "PersonG Last", "PersonH Last", "PersonI Last", "PersonK Last", "PersonM Last", "PersonO Last", "PersonP Last", "PersonR Last", "PersonS Last", "PersonU Last", "PersonV Last", "PersonY Last", "PersonZ Last", "PersonD Last", "PersonF Last", "PersonH Last", "PersonM Last", "PersonO Last", "PersonS Last", "PersonU Last", "PersonY Last", "PersonF Last", "PersonM Last", "PersonO Last", "PersonU Last", "PersonM Last", "PersonO Last", "PersonM Last"]}
+//var user_brackets = {male: ["Filippo DeFrenza", "Teague Conrad", "Nick Mussman", "Jake Lydon", "Jeffrey Pagels", "Mark Frale", "Jacob Glorioso", "Robert Stanislawski", "Anthony Wachal", "Andrew Bittner", "Jacob Cosentino", "Davon Holmes", "Raja Mittal", "Jake Milewski", "Raj Patel", "Jaylen Patel", "Teague Conrad", "Nick Mussman", "Mark Frale", "Robert Stanislawski", "Anthony Wachal", "Jacob Cosentino", "Jake Milewski", "Jaylen Patel", "Teague Conrad", "Mark Frale", "Anthony Wachal", "Jaylen Patel", "Mark Frale", "Anthony Wachal", "Anthony Wachal"], female: ["Katie O'Brien", "Niva Patel", "Olivia Olszewski", "Nicole Brashears", "Alyssa Bolbot", "Kelly O'Sullivan", "Delaney Demaret", "Gianna Catania", "Katie O'Brien", "Nicole Brashears", "Kelly O'Sullivan", "Gianna Catania", "Katie O'Brien", "Gianna Catania", "Katie O'Brien"]}
+//var correct_brackets = {male: ["Filippo DeFrenza", "Teague Conrad", "Nick Mussman", "Jake Lydon", "Jeffrey Pagels", "Mark Frale", "Jacob Glorioso", "Robert Stanislawski", "Anthony Wachal", "Andrew Bittner", "Jacob Cosentino", "Davon Holmes", "Raja Mittal", "Jake Milewski", "Raj Patel", "Jaylen Patel", "Teague Conrad", "Nick Mussman", "Mark Frale", "Robert Stanislawski", "Anthony Wachal", "Jacob Cosentino", "Jake Milewski", "Jaylen Patel", "Teague Conrad", "Mark Frale", "Anthony Wachal", "Jaylen Patel", "Mark Frale", "Anthony Wachal", "Anthony Wachal"], female: ["Katie O'Brien", "Niva Patel", "Olivia Olszewski", "Nicole Brashears", "Alyssa Bolbot", "Kelly O'Sullivan", "Delaney Demaret", "Gianna Catania", "Katie O'Brien", "Nicole Brashears", "Kelly O'Sullivan", "Gianna Catania", "Katie O'Brien", "Gianna Catania", "Katie O'Brien"]};
+		//var i = 0
+		//for (var key in user_brackets) {
+			//if (!user_brackets[key]) {
+				//user_brackets[key] = Array((i == 0 ? 31 : 15)).fill(null)
+			//}
+			//i = i + 1;
+		//}
+
+		 //i = 0
+		//for (var key in correct_brackets) {
+			//if (!correct_brackets[key]) {
+				//correct_brackets[key] = Array((i == 0 ? 31 : 15)).fill(null)
+			//}
+			//i = i + 1;
+		//}
 //var user_has_posted = {male: false, female: false};
-//var event_has_started = false;
+//var event_has_started = true;
 //var name = "Filip Osowski";
 //var points = 106;
 //var rank = 56;
-////var leaderboard = [["A", 50], ["B", 45], ["C", 40], ["D", 35], ["E", 30], ["F", 25], ["G", 20], ["H", 15], ["I", 10], ["J", 5], ["K", 0]];
+//var leaderboard = [["Gianna Catania", 50], ["Mark Frale", 45], ["Katie O'Brien", 40], ["Anthony Wachal", 35], ["Jaylen Patel", 30], ["Davon Holmes", 25], ["Anthony Wachal", 20], ["Nicole Brashears", 15], ["Kelly O'Sullivan", 10], ["Jake Lyndon", 5], ["Filippo DeFrenza", 0]];
 //var leaderboard = null;
 
 //This code is all the navigation bar and the space inside of it
@@ -84,20 +105,19 @@ class NavBar extends React.Component {
 				</TabContainer>}
 				{this.state.value === 1 &&
 				<TabContainer>
-					<Tournament starting_names={starting_names["female"]} user_bracket={user_brackets["female"]} disabled={user_has_posted["female"] || event_has_started} gender="female" correct_bracket={correct_brackets["male"]} display_only={false}/>
+					<Tournament starting_names={starting_names["female"]} user_bracket={user_brackets["female"]} disabled={user_has_posted["female"] || event_has_started} gender="female" correct_bracket={correct_brackets["female"]} display_only={false}/>
 				</TabContainer>}
 				{this.state.value === 2 &&
 				<TabContainer>
 					<LeaderboardPage name={name} rank={rank} points={points} leaderboard_data={leaderboard} event_has_started={event_has_started}/>
 				</TabContainer>}
 				<footer style={{backgroundColor: "lightgrey", color: "grey", height: "60px", display: "flex", justifyContent: "flex-end", alignItems: "center"}}>
-					<div style={{paddingRight: "25px", fontFamily: "Roboto"}}>Created by Andrew Milas, Viraj Sule, Murat Oguz, Graham Knott, Edward Federmeyer, and Filip Osowski</div>
+					<div style={{paddingRight: "25px", fontFamily: "Roboto"}}>Created by Andrew Milas, Viraj Sule, Murat Oguz, Graham Knott, Eddie Federmeyer, and Filip Osowski</div>
 				</footer>
 			</div>
 		);
 	}
 }
-
 
 class LeaderboardPage extends React.Component {
 	logout() {
@@ -115,34 +135,42 @@ class LeaderboardPage extends React.Component {
 	render() {
 		var content = null;
 		if (this.props.leaderboard_data) {
+			var profile_data = null;
+
+			let fontSize = (isMobile ? "3em" : "7em")
+			if (this.props.rank) {
+				profile_data =
+						<div style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignItems: "center", top: "50px", backgroundColor: "#ededed", borderRadius: "15px", fontFamily: "Roboto", height: "200px"}}>
+							<div style={{display: "flex", flexDirection: "column", alignItems: "center", height: "200px"}}>
+								<div style={{fontSize: "2em", fontWeight: "400", paddingTop: "25px"}}>Rank</div>
+								<div style={{fontSize: fontSize, fontWeight: "900", paddingTop: "55px"}}>#{this.props.rank}</div>
+							</div>
+							<div style={{display: "flex", flexDirection: "column", alignItems: "center", height: "200px"}}>
+								<div style={{fontSize: "2em", fontWeight: "400", paddingTop: "25px"}}>Points</div>
+								<div style={{fontSize: fontSize, fontWeight: "900", paddingTop: "55px"}}>{this.props.points}</div>
+							</div>
+						</div>
+			}
+
 			content = 
 				<div>
-					<div style={{display: "flex", flexDirection:"row", justifyContent: "space-evenly", alignItems: "center", top: "50px", backgroundColor: "#ededed", borderRadius: "15px", fontFamily: "Roboto", height: "200px"}}>
-						<div style={{display: "flex", flexDirection: "column", alignItems: "center", height: "200px"}}>
-							<div style={{fontSize: "2em", fontWeight: "400", paddingTop: "25px"}}>Rank</div>
-							<div style={{fontSize: "7em", fontWeight: "900", paddingTop: "55px"}}>#{this.props.rank}</div>
-						</div>
-						<div style={{display: "flex", flexDirection: "column", alignItems: "center", height: "200px"}}>
-							<div style={{fontSize: "2em", fontWeight: "400", paddingTop: "25px"}}>Points</div>
-							<div style={{fontSize: "7em", fontWeight: "900", paddingTop: "55px"}}>{this.props.points}</div>
-						</div>
-					</div>
+					{profile_data}
 					<div style={{display: "flex", justifyContent: "center", fontFamily: "Roboto", fontSize: "3em", fontWeight: "900", paddingTop: "75px", paddingBottom: "50px"}}>Leaderboard</div>
-					<div style={{backgroundColor: "#ededed", borderRadius: "15px 15px 0px 0px"}}>
+					<div style={{backgroundColor: "#ededed", borderRadius: "15px 15px 15px 15px"}}>
 						<Leaderboard leaderboard_data={leaderboard}/>
 					</div>
 				</div>
 		}
 		else {
 			content = 
-				<div style={{paddingTop: "50px", display: "flex", justifyContent: "center", fontFamily: "Roboto", fontSize: "3em", fontWeight: "400", minHeight: "1000px", lineHeight: "1.0", textAlign: "center"}}>Come back when the event is over to see the leaderboard!</div>
+				<div style={{paddingTop: "50px", display: "flex", justifyContent: "center", fontFamily: "Roboto", fontSize: "3em", fontWeight: "400", minHeight: "1000px", lineHeight: "1.15", textAlign: "center"}}>Come back when the event is over to see the leaderboard!</div>
 		}
 
 		var leaderboardPage =
 			<div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start"}}>
 				<div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
 					<div style={{width: "150px"}}/>
-					<div style={{display: "flex", justifyContent: "center", fontFamily: "Roboto", fontSize: "3em", fontWeight: "900", paddingBottom: "35px"}}>Logged in as {this.props.name}</div>
+					<div style={{display: "flex", justifyContent: "center", fontFamily: "Roboto", fontSize: (isMobile ? "2em" : "3em"), fontWeight: "900", paddingBottom: "35px", lineHeight: "1.15"}}>Logged in as {this.props.name}</div>
 					<Button variant="contained" color="secondary" onClick = {this.logout} style={{height: "50px", width: "150px", marginBottom: "35px"}}>Log Out</Button>
 				</div>
 				{content}
@@ -162,41 +190,31 @@ class Leaderboard extends React.Component {
 	render() {
 		let leaderboard = <div>No leaderboard data</div>
 		if (this.props.leaderboard_data) {
-			const rows = [
-				this.createData(0),
-				this.createData(1),
-				this.createData(2),
-				this.createData(3),
-				this.createData(4),
-				this.createData(5),
-				this.createData(6),
-				this.createData(7),
-				this.createData(8),
-				this.createData(9),
-			];
+			var rows = [];
+			for (var i = 0; i < this.props.leaderboard_data.length; i++) {
+				rows.push(this.createData(i));
+			}
+
+			var width = (isMobile ? "200px" : "500px")
 			leaderboard = (
-				<Table className={"Leaderboard"}>
+				<div className={"Leaderboard"} style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
 					{/*The titles at the top of the leaderboard*/}
-					<TableHead>
-						<TableRow>
-							<TableCell align = "center">Name</TableCell>
-							<TableCell>Score</TableCell>
-						</TableRow>
-					</TableHead>
+					<div style={{display: "flex", flexDirection: "row", justifyContent: "space-between", width: width, fontFamily: "Roboto", fontSize: "2.5em", fontWeight: "900", paddingBottom: "10px", paddingTop: "15px"}}>
+						<span>Name</span>
+						<span>Points</span>
+					</div>
+					<div style={{borderBottom: "3px solid grey", width: width}}></div>
 					{/*The names and scores of the people in the leaderboard*/}
-					<TableBody>
-						{rows.map(row => (
-							<TableRow key={row.id}>
-								<TableCell component="th" scope = "row" align = "center">
-									{row.name}
-								</TableCell>
-								<TableCell>
-									{row.score}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
+					{rows.map(row => (
+						<div>
+							<div key={row.id} style={{display: "flex", flexDirection: "row", justifyContent: "space-between", width: width, fontFamily: "Roboto", fontSize: "2em", fontWeight: "400", paddingBottom: "15px", paddingTop: "15px", lineHeight: "1.15"}}>
+								<span>{row.name}</span>
+								<span>{row.score}</span>
+							</div>
+							<div style={{borderBottom: "1px solid grey", width: width}}></div>
+						</div>
+					))}
+				</div>
 			)
 		}
 		return leaderboard;
@@ -222,8 +240,12 @@ class PostButton extends React.Component {
 			user_bracket: this.props.user_bracket
 		}));
 
+		ReactGA.event({
+			category: 'User',
+			action: ('Locked bracket ' + this.props.gender)
+		});
+		
 		this.props.disable_bracket();
-		console.log("Post button was clicked");
 	}
 
 	render() {
@@ -231,7 +253,10 @@ class PostButton extends React.Component {
 		var disabled = true;
 		var status = "Lock Bracket";
 
-		if (user_has_posted[gender]=== true) {
+		if (event_has_started) {
+			status = "Event has already started";
+		}
+		else if (user_has_posted[gender]=== true) {
 			status = "Locked";
 		}
 		else if (user_bracket.includes(null)) {
@@ -242,10 +267,63 @@ class PostButton extends React.Component {
 		}
 
 		return (
-			<div>
-				<Button fullWidth={true} variant="contained" color="primary" disabled = {disabled} size = "large" onClick = {this.onClick} style={{minHeight: "50px", height: "auto", overflow: "hidden"}}>
+			<div style={{display: "flex", flexDirection: "row"}}>
+				<Button fullWidth={true} variant="contained" color="primary" disabled = {disabled} onClick = {this.onClick} style={{minHeight: "50px", height: "auto", overflow: "hidden", fontFamily: "Roboto", fontSize: (isMobile ? "1em" : "2em"), fontWeight: "400"}}>
 					{status}
 				</Button>
+				<HelpButton/>
+			</div>
+		)
+	}
+}
+
+class HelpButton extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {open: false};
+		this.onClick = this.onClick.bind(this);
+		this.onClose = this.onClose.bind(this);
+	}
+
+	onClick() {
+		ReactGA.event({
+			category: 'User',
+			action: 'Clicked the help button'
+		});
+		this.setState({open: true});
+	}
+
+	onClose() {
+		this.setState({open: false});
+	}
+
+	render() {
+		return (
+			<div>
+				<Button variant="contained" onClick={this.onClick} style={{minHeight: "50px", height: "auto", marginLeft: "25px", fontFamily: "Roboto", fontSize: "2em", fontWeight: "900"}}>
+					?
+				</Button>
+				<Dialog
+					open={this.state.open}
+					onClose={this.onClose}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description"
+				>
+					<DialogTitle id="alert-dialog-title">
+						To complete your brackets:
+						<ol>
+							<li>Pick the winner of <b>each</b> match.</li>
+							<li>Click the "Lock Bracket" button at the top of the page.</li>
+							<li>Do the same for <b>both</b> Male and Female brackets.</li>
+						</ol>
+						Come back after the battle to see how your brackets did!
+					</DialogTitle>
+				<DialogActions>
+						<Button onClick={this.onClose} color="primary">
+							OK
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</div>
 		)
 	}
@@ -270,6 +348,10 @@ class Tournament extends React.Component {
 	disableBracket() {
 		this.setState({disabled: true});
 	}
+	
+	baseLog(x, y) {
+		return Math.log(y) / Math.log(x);
+	}
 
 	render() {
 		var postButton = <PostButton gender={this.props.gender} user_bracket={this.props.user_bracket} disable_bracket={this.disableBracket}/>;
@@ -280,19 +362,26 @@ class Tournament extends React.Component {
 			}
 		}
 
-		var matchColumns = Array(5).fill(undefined);
+
+		var matchColumns = Array(this.baseLog(2, this.props.starting_names.length)).fill(undefined);
+		
 		var all_names = this.props.starting_names.concat(this.props.user_bracket)
 
 		var indexOfStartingMatch = 0
 		for (var i = 0; i < matchColumns.length; i++) {
-			let numOfMatches = Math.pow(2, 4 - i);
+			let numOfMatches = Math.pow(2, matchColumns.length - 1 - i);
 			var matches = Array(numOfMatches).fill(undefined);
 
 			for (var k = 0; k < numOfMatches; k++) {
 				let id = k + indexOfStartingMatch;
 				let nameIndex = id * 2;
 				let names = [all_names[nameIndex], all_names[nameIndex + 1]];
-				let correct_names = (i > 0) ? [this.props.correct_bracket[nameIndex - 32], this.props.correct_bracket[nameIndex - 31]] : [null, null];
+
+				var correct_names = [null, null];
+				if (correct_brackets["male"][0] && correct_brackets["female"][0]) {
+					correct_names = (i > 0) ? [this.props.correct_bracket[nameIndex - this.props.starting_names.length], this.props.correct_bracket[nameIndex - this.props.starting_names.length + 1]] : [null, null];
+				}
+
 				let winner = this.props.user_bracket[id];
 				var disabled = this.state.disabled;
 				var value = undefined;
@@ -317,23 +406,27 @@ class Tournament extends React.Component {
 					value = winner
 				}
 
-				if (this.props.user_bracket[id] != all_names[32 + id]) {
+				if (this.props.user_bracket[id] != all_names[this.props.starting_names.length + id]) {
 					all_names = this.props.starting_names.concat(this.props.user_bracket)
 				}
 
 				var correct_bracket = this.props.correct_bracket;
 				var user_bracket = this.props.user_bracket;
 				var tournament_winner = null
-				if (i == 4) {
-					if (correct_bracket[30]) {
+				if (i == matchColumns.length - 1) {
+					if (correct_bracket[this.props.starting_names.length - 2] && correct_brackets["male"][0] && correct_brackets["female"][0]) {
 						var correction = null
 						var strikethrough = "none"
-						if (correct_bracket[30] == user_bracket[30]) {
+						if (correct_bracket[this.props.starting_names.length - 2] == user_bracket[this.props.starting_names.length - 2]) {
 							correction = <div style={{borderRadius: "5px", backgroundColor: "#c1fed6", width: "200px", position: "absolute", height: "50px", top: "35px", left: "330px"}}/>;
 						}
 						else {
 							strikethrough = "line-through";
-							correction = <div style={{position: "absolute", top: "-10px", left: "330px", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "200px", height: "50px"}}>{this.props.correct_bracket[30]}</div>;
+							correction = 
+								<div>
+									<div style={{borderRadius: "5px", backgroundColor: "#fec1c1", width: "200px", position: "absolute", height: "50px", top: "35px", left: "330px"}}/>
+									<div style={{position: "absolute", top: "-10px", left: "330px", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "200px", height: "50px"}}>{this.props.correct_bracket[this.props.starting_names.length - 2]}</div>
+								</div>
 						}
 					}
 
@@ -351,7 +444,7 @@ class Tournament extends React.Component {
 					<div style={{width: "300px", height: "200px"}} key={k + indexOfStartingMatch}>
 						<div style={{border: "solid 5px grey", borderRadius: "10px", width: "200px", position: "relative"}}>
 							<Match names={names} id={k + indexOfStartingMatch} update={this.handleChange} disabled={disabled} value={value} correct_names={correct_names}/>
-							{k%2 == 0 && i != 4 &&
+							{k%2 == 0 && i != matchColumns.length - 1 &&
 								<div style={{position: "absolute", width: "280px", top: "57px", borderTop: "solid 2px grey", height: ((200 * (i + 1)) + "px"), borderRight: "solid 2px grey", pointerEvents: "none"}}/>
 							}
 							{k%2 == 1 &&
@@ -359,14 +452,14 @@ class Tournament extends React.Component {
 								<div style={{position: "absolute", width: "280px", top: ((-(43 + (200 * (i + 1)) - 100)) + "px"), borderBottom: "solid 2px grey", height: ((200 * (i + 1)) + "px"), borderRight: "solid 2px grey", pointerEvents: "none"}}/>
 							}
 							{i>0 &&
-								<div style={{position: "absolute", width: ((i==4) ? "350px" : "220px"), left: "-20px", top: "57px", borderBottom: "solid 2px grey", pointerEvents: "none"}}/>
+								<div style={{position: "absolute", width: ((i==matchColumns.length - 1) ? "350px" : "220px"), left: "-20px", top: "57px", borderBottom: "solid 2px grey", pointerEvents: "none"}}/>
 							}
 							{tournament_winner}
 						</div>
 					</div>
 			}
 
-			indexOfStartingMatch = indexOfStartingMatch + Math.pow(2, 4 - i);
+			indexOfStartingMatch = indexOfStartingMatch + Math.pow(2, matchColumns.length - 1 - i);
 
 			matchColumns[i] = <div key={i} className="matchColumn" style={{display: "flex", flexDirection: "column", justifyContent: "space-around"}}>{matches}</div>
 		}
@@ -413,7 +506,11 @@ class Match extends React.Component {
 				}
 				else {
 					strikethrough[i] = "line-through";
-					corrections[i] = <div key={i} style={{position: "absolute", top: ((i == 0) ? "-35px" : "135px"), left: "50px"}}>{this.props.correct_names[i]}</div>
+					corrections[i] = 
+						<div key={i} >
+							<div style={{position: "absolute", top: ((i == 0) ? "0px" : "58px"), width: "200px", height: "58px", backgroundColor: "#fec1c1", borderRadius: ((i==0) ? "5px 5px 0px 0px" : "0px 0px 5px 5px")}}></div>
+							<div style={{position: "absolute", top: ((i == 0) ? "-35px" : "135px"), left: "50px"}}>{this.props.correct_names[i]}</div>
+						</div>
 				}
 			}
 		}
@@ -426,46 +523,11 @@ class Match extends React.Component {
 							value={value ? value : "deselected"}
 							onChange={this.handleChange}
 						>
-								<FormControlLabel value={names[0] || ''} disabled={disable_forms[0]} control={<Radio />} label={names[0]} style={{margin: "5px", textDecoration: strikethrough[0]}}/>
-								<FormControlLabel value={names[1] || ''} disabled={disable_forms[1]} control={<Radio />} label={names[1]} style={{margin: "5px", textDecoration: strikethrough[1]}}/>
+									<FormControlLabel value={names[0] || ''} disabled={disable_forms[0]} control={<Radio />} label={names[0]} style={{margin: "5px", textDecoration: strikethrough[0]}}/>
+									<FormControlLabel value={names[1] || ''} disabled={disable_forms[1]} control={<Radio />} label={names[1]} style={{margin: "5px", textDecoration: strikethrough[1]}}/>
 						</RadioGroup>
 				</FormControl>
 			</div>
-    );
-  }
-}
-
-class DemoMatch extends React.Component {
-	constructor(props) {
-		super(props);
-		const { names, id, update, user_bracket, defaultDisable } = props;
-		var disabled = defaultDisable;
-		var value = '';
-
-		this.state = {
-			value: value,
-			disabled: disabled
-		};
-	}
-
-  handleChange = event => {
-		this.props.update(event.target.value, this.props.id);
-    this.setState({ value: event.target.value });
-  };
-
-  render() {
-    return (
-      <div style={this.props.style}>
-        <FormControl component="fieldset">
-          <RadioGroup
-            value={this.state.value}
-            onChange={this.handleChange}
-          >
-            <FormControlLabel value={this.props.names[0]} disabled={this.state.disabled} control={<Radio />} label={this.props.names[0]}/>
-            <FormControlLabel value={this.props.names[1]}disabled={this.state.disabled} control={<Radio />} label={this.props.names[1]}/>
-          </RadioGroup>
-        </FormControl>
-      </div>
     );
   }
 }
@@ -486,16 +548,20 @@ xhr.onreadystatechange = function() {
 		points = data["points"];
 		rank = data["rank"];
 
+		var i = 0
 		for (var key in user_brackets) {
 			if (!user_brackets[key]) {
-				user_brackets[key] = Array(31).fill(null)
+				user_brackets[key] = Array((i == 0 ? 31 : 15)).fill(null)
 			}
+			i = i + 1;
 		}
 
+		i = 0
 		for (var key in correct_brackets) {
 			if (!correct_brackets[key]) {
-				correct_brackets[key] = Array(31).fill(null)
+				correct_brackets[key] = Array((i == 0 ? 31 : 15)).fill(null)
 			}
+			i = i + 1;
 		}
 
 		ReactDOM.render(<NavBar/>, document.getElementById('root'));
