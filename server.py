@@ -8,38 +8,57 @@ from flask import session
 from datetime import datetime
 
 app = flask.Flask(__name__)
+
+# Secret key for use with sessions.
 app.secret_key = os.urandom(24)
+
+# These variables are initialized in setup_sqlalchemy to reflect tables in the database.
 users = None
 event = None
+
+# Used for connecting to and getting data from the database.
 engine = None
+
+# Setting the date & time of the start of the event so as to know if the event has started.
 CST = pytz.timezone("America/Chicago")
 event_start_datetime = datetime(2019, 4, 18, 14, 15).astimezone(CST)
-main_template = None
+
+# These are the profile ids that are allowed to set the event bracket.
 admin_profile_id = 123
 my_profile_id = 321
 
-@app.route("/clear-session", methods=["POST"])
-def clear_session():
-    session.pop("profile_id", None)
-    print("session is now", session)
-    return "Session cleared"
 
+# All requests go through here before they reach any app.route.
 @app.before_request
 def before_request():
     session.permanent = True;
     print(datetime.now().astimezone(CST), "Request made", flask.request.method, flask.request.url)
     if flask.request.method == "GET":
+
+        # If the request is associated with a session (the user is logged in), the user is given their main page.
+        # Else the user is taken to the login page.
         if "profile_id" in session:
             return main()
         else:
             return login()
 
 
+# Clears the user's session (logs the user out).
+# This is run when the user clicks on the "LOGOUT" button.
+@app.route("/clear-session", methods=["POST"])
+def clear_session():
+    session.pop("profile_id", None)
+    print("session is now", session)
+    return "Session cleared"
+
+
+# Returns the login page.
 @app.route("/login")
 def login():
     return flask.send_from_directory("/home/ubuntu/login_build", "index.html")
 
 
+# Creates a user from data posted to the server.
 @app.route("/create-user", methods=["POST"])
 def create_user():
     conn = engine.connect()
@@ -47,13 +66,18 @@ def create_user():
     print("Getting user data, in_data is", in_data)
     selected_row = None
     
+    # The user's google account belong to d211 to login.
     if ("hd" in in_data and (in_data["hd"] == "students.d211.org" or in_data["hd"] == "d211.org")):
         selected_row = conn.execute("SELECT * FROM users WHERE profile_id=" + str(in_data["profile_id"]) + ";").first()
+
+        # If a user is not found in the database, a new user is constructed.
         if (selected_row == None):
             print("No user data found for", in_data["name"], ", creating a new user...")
             conn.execute(users.insert().values(name=in_data["name"], email=in_data["email"], profile_id=str(in_data["profile_id"]), rank=sa.sql.null(), bracket_male=sa.sql.null(), bracket_female=sa.sql.null()))  
             print("Done creating a new user")
 
+        # A session with the user is started. 
+        # Now, when the user reloads the page, they will be taken to their main page.
         session["profile_id"] = in_data["profile_id"]
         session.modified = True;
 
@@ -66,10 +90,13 @@ def create_user():
         return flask.Response("Must login from d211.org", status=403, mimetype='raw')
 
 
+# Returns the main page.
 @app.route("/main")
 def main():
     return flask.send_from_directory("/home/ubuntu/build_links", "main.html")
 
+
+# Gets all user data necessary to render their main page.
 @app.route("/get-data", methods=["POST"])
 def get_data():
     conn = engine.connect()
@@ -81,7 +108,6 @@ def get_data():
     conn.close()
 
     event_has_started = event_start_datetime < datetime.now().astimezone(CST)
-    # event_has_started = True
     user_brackets = {"male": user["bracket_male"], "female": user["bracket_female"]}
     user_has_posted = {"male": (True if user["bracket_male"] else False), "female": (True if user["bracket_female"] else False)}
 
@@ -105,6 +131,7 @@ def get_data():
 
 
 
+# Sets the user's male or female bracket in the database.
 @app.route("/set-user-bracket", methods=["POST"])
 def set_user_bracket(): 
     conn = engine.connect()
@@ -115,11 +142,14 @@ def set_user_bracket():
     profile_id = int(session["profile_id"])
     json = flask.request.get_json()
     has_started = conn.execute(sa.select([event])).first()['has_started']
-    print("Event has_start =", has_started)
+    print("Event has_started =", has_started)
     print("Event has_completed =", has_completed())
-
     print("Received post from profile_id =", profile_id)
+
+    # If the profile_id belongs to the admin or me, the event bracket is set.
     if profile_id == admin_profile_id or profile_id == my_profile_id:
+
+        # The event can only be "completed" using this method once after both event brackets have been set.
         if not has_completed():
             if json["gender"] == "male":
                 conn.execute(event.update().values(bracket_male=json["user_bracket"]))
@@ -133,6 +163,8 @@ def set_user_bracket():
             print("Did not set event bracket\n")
             return "false"
     else:
+
+        # The user's bracket is set if the event has not yet started.
         if not has_started:
             if json["gender"] == "male":
                 conn.execute(users.update().where(users.c.profile_id == profile_id).values(bracket_male=json["user_bracket"]))
@@ -144,6 +176,7 @@ def set_user_bracket():
     return "true"
 
 
+# Creates a leaderboard of students from the score of their brackets.
 @app.route("/create-leaderboard", methods=["POST"])
 def create_leaderboard():
     score_brackets() # This function scores users
@@ -152,13 +185,14 @@ def create_leaderboard():
 
     user_list = conn.execute("SELECT name, profile_id FROM users WHERE points IS NOT NULL ORDER BY points DESC;")
         
+    # Giving each user a rank.
     rank = 1
     for u in user_list:
         conn.execute("UPDATE users SET rank=" + str(rank) + " WHERE profile_id=" + str(u[1]) + ";")
         rank += 1
     
-    #...
     
+    # Getting a list of the top ten users.
     res = conn.execute("SELECT name, points FROM users WHERE rank IS NOT NULL AND points IS NOT NULL ORDER BY points DESC LIMIT 10;")
     sql_leaderboard = [dict(r) for r in res]
     leaderboard = []
@@ -175,17 +209,19 @@ def create_leaderboard():
     return "Done!"
 
 
+# Scores the brackets of users in the database.
 @app.route("/score-brackets", methods=["POST"])
 def score_brackets():
     print("Scoring brackets...")
     conn = engine.connect()
-    # Index of brackets --> bracket_male = n(1) | bracket(female = n(2)
+
+    # Only users who completed both male & female brackets have their brackets scored.
     names = conn.execute(sa.select([users.c.name, users.c.bracket_male, users.c.bracket_female]).where(sa.and_(users.c.bracket_male!=sa.sql.null(), users.c.bracket_female!=sa.sql.null()))).fetchall()
-    print("GOT NAMES, NAMES ARE", names);
     
     event = conn.execute("SELECT * FROM event").first()
     event_final = [json.loads(event["bracket_male"]), json.loads(event["bracket_female"])]
 
+    # The user's score is calculated.
     for n in names:
         user_guesses = [n[1], n[2]]
        
@@ -212,18 +248,19 @@ def score_brackets():
                     user_score += modifier
             
         conn.execute(users.update().values(points=user_score).where(users.c.name == n[0]))
-        # conn.execute("UPDATE users SET points=" + str(user_score) + " WHERE name='" + n[0] + "';")
     
     conn.close()
     return "Done!"
 
 
+# Create database tools.
 def setup_sqlalchemy():
     global engine, users, event
-
+    
     engine = sa.create_engine("mysql+pymysql://sqlalchemy:catblue@localhost/real_server", pool_pre_ping=True)
     metadata = sa.MetaData()
 
+    # Creating database metadata for ease of use later on
     users = sa.Table('users', metadata, sa.Column('name', sa.String), sa.Column('email', sa.String), sa.Column('profile_id', sa.Integer, primary_key=True), sa.Column('rank', sa.Integer), sa.Column('points', sa.Integer), sa.Column('bracket_male', sa.JSON), sa.Column('bracket_female', sa.JSON))
 
     event = sa.Table('event', metadata, sa.Column('has_started', sa.Boolean), sa.Column('leaderboard', sa.JSON), sa.Column('bracket_male', sa.JSON), sa.Column('bracket_female', sa.JSON))
