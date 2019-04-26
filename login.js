@@ -3,18 +3,19 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Dialog, DialogTitle, DialogActions, Button } from '@material-ui/core';
 import { GoogleLogin } from 'react-google-login';
-import ReactGA from 'react-ga';
-ReactGA.initialize('UA-137697306-1');
-ReactGA.pageview('/login-page');
 
 class App extends React.Component {
 	constructor(props) {
 		super(props);
+
+		// open corresponds to whether the Dialog (telling you to login using your @d211.org email) is shown or not
 		this.state = {open: false};
+
 		this.onSignIn = this.onSignIn.bind(this);
 		this.onClose = this.onClose.bind(this);
 	}
 
+	// Called when a user signs in. Gets user's data from the googleUser object and sends it to the server.
 	onSignIn(googleUser) {
 		let profile = googleUser.getBasicProfile();
 		var xhr = new XMLHttpRequest();
@@ -31,10 +32,15 @@ class App extends React.Component {
 		let self = this
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === XMLHttpRequest.DONE) {
+
+				// If the server says the login failed (the user tried logging in w/o their school email), the Dialog is shown.
 				if (xhr.status == 403) {
 					self.setState({open: true});
 				}
 				else {
+
+					// If the login is successful, the server stores login data to a session.
+					// Consequently, a new request to the server will return the user's main page.
 					window.location.reload(true);
 				}
 			}
