@@ -15,14 +15,6 @@ server {
 		root /home/ubuntu;
 		try_files /main_build$uri /login_build$uri /extra$uri =404;
 	}
-
-	location /dad/ {
-		deny all;
-	}
-
-	location /pm/ {
-		deny all;
-	}
 }
 
 server {
