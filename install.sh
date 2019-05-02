@@ -2,7 +2,7 @@ if [[ $UID != 0 ]]; then
 	echo "Please run this script with sudo:"
 	echo "sudo $0 $*"
 	exit 1
-else:
+else
 	sudo apt install nginx mysql-server
 	wget -O miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 	sudo bash miniconda.sh -b
