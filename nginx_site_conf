@@ -1,33 +1,51 @@
+# You'll have to change replace 'battleforcharity.com' with whatever domain the site uses.
+
 server {
+	# This server listens on port 80.
+	# (Make sure port 80 is also open on AWS!)
 	listen 80;
-	# root /home/ubuntu/www;
+
 	server_name battleforcharity.com;
+
+	# This is CORS stuff that allows requests from the
+	# JS served by battleforcharity.com to access
+	# all data returned using the BFC API (images,
+	# data server by flask, etc).
 	add_header 'Access-Control-Allow-Credentials' 'true';
-	add_header 'Access-Control-Allow-Origin' 'http://localhost:3000';
+	add_header 'Access-Control-Allow-Origin' 'http://battleforcharity.com';
         add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept';
 
 
+	# All URLs that do not start with /static/ get passed to whatever is
+	# listening on the port 5000. In this case it's our Flask app.
+	# A request like http://battleforcharity.com/run/something is equivalent
+	# to http://localhost:5000/run/something when processed by Nginx.
 	location / {
 		proxy_pass http://localhost:8000/;
 	}
 
 	location /static/ {
+		# The URL is prepended with /home/ubuntu for easier file lookup.
+		# For example, when /static/index.html is matched,
+		# the $uri variable becomes /home/ubuntu/static/index.html
 		root /home/ubuntu;
+
+		# See if a file located by /something$uri exists. 
+		# If it exists, return it. If not, return a 404.
+		# The $uri variable is equal to the root directory (specified above)
+		# plus the matched url (/static/some/url/)
+		# For example, a request to http://battleforcharity.com/static/my/file.txt
+		# would cause the server to check for a file in the following locations and order:
+		# /home/ubuntu/main_build/my/file.txt 
+		# /home/ubuntu/login_build/my/file.txt 
+		# /home/ubuntu/extra/my/file.txt 
+		# Nginx will return the first file it finds. If Nginx doesn't find a file
+		# it will return a 404 error.
 		try_files /main_build$uri /login_build$uri /extra$uri =404;
 	}
 }
 
-server {
-	listen 80;
-	# root /home/ubuntu/www;
-	server_name 172.31.22.162;
-	add_header 'Access-Control-Allow-Credentials' 'true';
-	add_header 'Access-Control-Allow-Origin' 'http://localhost:3000';
-        add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept';
-
-
-}
-
+# This server blocks redirects all request to www.battleforcharity.com to http://battleforcharity.com
 server {
 	listen 80;
 	server_name www.battleforcharity.com;
