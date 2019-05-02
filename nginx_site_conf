@@ -1,0 +1,43 @@
+server {
+	listen 80;
+	# root /home/ubuntu/www;
+	server_name battleforcharity.com;
+	add_header 'Access-Control-Allow-Credentials' 'true';
+	add_header 'Access-Control-Allow-Origin' 'http://localhost:3000';
+        add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept';
+
+
+	location / {
+		proxy_pass http://localhost:8000/;
+	}
+
+	location /static/ {
+		root /home/ubuntu;
+		try_files /main_build$uri /login_build$uri /extra$uri =404;
+	}
+
+	location /dad/ {
+		deny all;
+	}
+
+	location /pm/ {
+		deny all;
+	}
+}
+
+server {
+	listen 80;
+	# root /home/ubuntu/www;
+	server_name 172.31.22.162;
+	add_header 'Access-Control-Allow-Credentials' 'true';
+	add_header 'Access-Control-Allow-Origin' 'http://localhost:3000';
+        add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept';
+
+
+}
+
+server {
+	listen 80;
+	server_name www.battleforcharity.com;
+	return 301 $scheme://battleforcharity.com$request_uri;
+}
